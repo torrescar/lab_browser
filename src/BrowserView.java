@@ -61,6 +61,7 @@ public class BrowserView {
     private Button myBackButton;
     private Button myNextButton;
     private Button myHomeButton;
+    private Button addFavoritesButton;
     // favorites
     private ComboBox<String> myFavorites;
     // get strings from resource file
@@ -91,12 +92,18 @@ public class BrowserView {
      * Display given URL.
      */
     public void showPage (String url) {
-        URL valid = myModel.go(url);
+        URL valid = null;
+		try {
+			valid = myModel.go(url);
+		} catch (BrowserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         if (valid != null) {
             update(valid);
         }
         else {
-            showError("Could not load " + url);
+            showError(url);
         }
     }
 
@@ -120,7 +127,7 @@ public class BrowserView {
     public void showError (String message) {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle(myResources.getString("ErrorTitle"));
-        alert.setContentText(message);
+        alert.setContentText(myResources.getString("Error")+message);
         alert.showAndWait();
     }
 
@@ -201,7 +208,7 @@ public class BrowserView {
         HBox result = new HBox();
         // create buttons, with their associated actions
         // old style way to do set up callback (anonymous class)
-        myBackButton = makeButton("BackCommand", new EventHandler<ActionEvent>() {
+        myBackButton = makeButton("BackBtn", new EventHandler<ActionEvent>() {
             @Override      
             public void handle (ActionEvent event) {       
                 back();        
@@ -209,13 +216,13 @@ public class BrowserView {
         });
         result.getChildren().add(myBackButton);
         // new style way to do set up callback (lambdas)
-        myNextButton = makeButton("NextCommand", event -> next());
+        myNextButton = makeButton("NextBtn", event -> next());
         result.getChildren().add(myNextButton);
-        myHomeButton = makeButton("HomeCommand", event -> home());
+        myHomeButton = makeButton("HomeBtn", event -> home());
         result.getChildren().add(myHomeButton);
         // if user presses button or enter in text field, load/show the URL
         EventHandler<ActionEvent> showHandler = new ShowPage();
-        result.getChildren().add(makeButton("GoCommand", showHandler));
+        result.getChildren().add(makeButton("RefreshBtn", showHandler));
         myURLDisplay = makeInputField(40, showHandler);
         result.getChildren().add(myURLDisplay);
         return result;
@@ -230,8 +237,28 @@ public class BrowserView {
             myModel.setHome();
             enableButtons();
         }));
+        
+        addFavoritesButton = makeButton("FavoritePromptTitle", event -> { 
+        	addFavorite();
+        	enableButtons();
+        });
+        
+        
+        result.getChildren().add(addFavoritesButton);
+        
+        result.getChildren().add(myFavorites);
+        myFavorites.valueProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				System.out.println(newValue);
+				showFavorite(newValue);
+			}
+		});
+        
         return result;
     }
+    
 
     // makes a button using either an image or a label
     private Button makeButton (String property, EventHandler<ActionEvent> handler) {

@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 
@@ -21,7 +22,9 @@ public class Main extends Application {
         // give the window a title
         stage.setTitle(TITLE);
         // add our user interface components to Frame and show it
-        stage.setScene(display.getScene());
+        Scene s = display.getScene();
+        s.getStylesheets().add("resources/default.css");
+        stage.setScene(s);
         stage.show();
         // start somewhere, less typing for debugging
         display.showPage(DEFAULT_START_PAGE);

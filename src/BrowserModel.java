@@ -58,8 +58,9 @@ public class BrowserModel {
 
     /**
      * Changes current page to given URL, removing next history.
+     * @throws BrowserException 
      */
-    public URL go (String url) {
+    public URL go (String url) throws BrowserException {
         try {
             URL tmp = completeURL(url);
             // unfortunately, completeURL may not have returned a valid URL, so test it
@@ -76,7 +77,7 @@ public class BrowserModel {
             return myCurrentURL;
         }
         catch (Exception e) {
-            return null;
+            throw new BrowserException();
         }
     }
 
@@ -132,7 +133,7 @@ public class BrowserModel {
     }
 
     // deal with a potentially incomplete URL
-    private URL completeURL (String possible) {
+    private URL completeURL (String possible) throws BrowserException {
         try {
             // try it as is
             return new URL(possible);
@@ -146,7 +147,7 @@ public class BrowserModel {
                     // e.g., let user leave off initial protocol
                     return new URL(PROTOCOL_PREFIX + possible);
                 } catch (MalformedURLException eee) {
-                    return null;
+                    throw new BrowserException();
                 }
             }
         }
