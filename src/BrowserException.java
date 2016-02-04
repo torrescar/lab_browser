@@ -1,6 +1,8 @@
 
 public class BrowserException extends Exception {
 
+	private static final long serialVersionUID = 5970880085295176897L;
+
 	public BrowserException() {
 		// TODO Auto-generated constructor stub
 	}
