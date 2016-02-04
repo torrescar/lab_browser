@@ -1,5 +1,5 @@
 
-public class BrowserException extends Exception {
+public class BrowserException extends RuntimeException {
 
 	private static final long serialVersionUID = 5970880085295176897L;
 
